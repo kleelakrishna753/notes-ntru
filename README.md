@@ -524,63 +524,70 @@ Would you like a quick walkthrough of the math that makes the inversion hard, or
 
 
 
-
-The parameter sets **EES1087EP2**, **EES1499EP1**, and **EES743EP1** are standardized configurations for the **NTRUEncrypt** public-key encryption algorithm, which is based on lattice cryptography. These sets are designed to provide varying levels of security, performance, and efficiency, catering to different application needs.
-
----
-
-### 🔐 Overview of NTRU Parameter Sets
-
-These parameter sets are part of a broader suite used in NTRUEncrypt implementations. Each set is characterized by specific parameters:
-
-* **N**: Degree of the polynomial ring (Z\[x]/(x^N - 1))
-* **q**: Modulus used in polynomial operations
-* **p**: Small modulus for the private key
-* **df**: Number of non-zero coefficients in the private key polynomial
-* **dm0**: Minimum acceptable number of -1's, 0's, and 1's in the polynomial
-* **maxM1**: Maximum absolute value of the message polynomial coefficients
-* **db**: Number of random bits to prepend to the message
-* **ca**: Parameter for the Index Generation Function
-* **sparse**: Indicates whether to treat ternary polynomials as sparsely populated
-* **fastFp**: Whether to use ternary polynomials
-* **hashAlga**: Hash algorithm used (e.g., SHA-512)([ResearchGate][1], [8gwifi.org][2])
+Excellent question. You're asking **where in the network stack** (OSI model or TCP/IP model) post-quantum schemes like **Kyber** or **NTRU** best fit.
 
 ---
 
-### 📊 Parameter Set Details
+## ✅ Short Answer:
 
-| Parameter Set | Security Level | N    | q    | p   | df  | dm0 | maxM1 | db | ca | Sparse | FastFp | Hash Algorithm |                                                                               |
-| ------------- | -------------- | ---- | ---- | --- | --- | --- | ----- | -- | -- | ------ | ------ | -------------- | ----------------------------------------------------------------------------- |
-| EES1087EP2    | 256 bits       | 1087 | 2048 | 120 | 120 | 0   | 256   | 13 | 25 | True   | False  | SHA-512        |                                                                               |
-| EES1499EP1    | 256 bits       | 1499 | 2048 | 79  | 79  | 0   | 256   | 13 | 17 | True   | False  | SHA-512        |                                                                               |
-| EES743EP1     | 256 bits       | 743  | 2048 | 111 | 111 | 0   | 256   | 13 | 25 | True   | False  | SHA-512        | ([tqt-group.co.uk][3], [8gwifi.org][2], [SpringerLink][4], [ResearchGate][5]) |
+**Kyber and NTRU are best suited for the Application and Transport layers** of the network stack — typically as part of **TLS (Transport Layer Security)** or other key exchange protocols.
 
 ---
 
-### ⚙️ Performance Metrics
+## 🧱 Where Exactly in the Stack?
 
-These sets also differ in their performance characteristics:
+### 🧩 OSI Model Placement:
 
-* **EES1087EP2**: Offers a balance between security and performance.
-* **EES1499EP1**: Optimized for encryption and decryption speed.
-* **EES743EP1**: Provides a trade-off between key size and encryption/decryption speed.([8gwifi.org][2])
-
-*Note: The exact performance metrics (e.g., encryption/decryption times) can vary based on implementation and hardware used.*
-
----
-
-### 🧪 Practical Considerations
-
-* **Security Level**: All three sets provide 256-bit security, suitable for most modern applications.
-* **Efficiency**: EES1499EP1 is optimized for speed, making it ideal for performance-critical applications.
-* **Compatibility**: These parameter sets are widely supported in NTRUEncrypt implementations and can be used interchangeably depending on the specific requirements of your project.([8gwifi.org][2])
+| OSI Layer            | Suitable for Kyber/NTRU? | Notes                                                                 |
+| -------------------- | ------------------------ | --------------------------------------------------------------------- |
+| **7 – Application**  | ✅ Yes                    | Used in protocols like HTTPS, SSH, VPNs.                              |
+| **6 – Presentation** | ✅ Indirectly             | Affects data encryption formats (e.g., TLS uses keys generated here). |
+| **5 – Session**      | ✅ Possibly               | Manages keys and handshakes (e.g., TLS session resumption).           |
+| **4 – Transport**    | ✅ Yes (TLS lives here)   | Kyber/NTRU used in TLS handshake for secure key exchange.             |
+| **3 – Network**      | ❌ Not ideal              | Too low-level. These layers don't handle encryption directly.         |
+| **2 – Data Link**    | ❌ Not used here          | Handles MAC addressing, framing — uses symmetric keys if any.         |
+| **1 – Physical**     | ❌ Not relevant           | Electrical/optical signaling, no encryption here.                     |
 
 ---
 
-If you need further assistance with implementing these parameter sets or have specific questions about their application, feel free to ask!
+## 🔒 Real-World Use: TLS and VPNs
 
-[1]: https://www.researchgate.net/figure/Suggested-parameters-sets_tbl3_278675750?utm_source=chatgpt.com "1: Suggested parameters sets | Download ..."
-[2]: https://8gwifi.org/ntrufunctions.jsp?utm_source=chatgpt.com "NTRU Encryption Decryption tool, Online NTRU key generator lattice based cryptography implementation"
-[3]: https://tqt-group.co.uk/2024/06/22/malware-source-code-investigation-hellokitty-part-2-ntruencrypt/?utm_source=chatgpt.com "Malware source code investigation: HelloKitty - part 2. NTRUEncrypt - TQT Group"
-[4]: https://link.springer.com/chapter/10.1007/978-3-319-52153-4_1?utm_source=chatgpt.com "Choosing Parameters for NTRUEncrypt ..."
-[5]: https://www.researchgate.net/publication/312407398_Choosing_parameters_for_NTRUEncrypt?utm_source=chatgpt.com "PDF) Choosing parameters for NTRUEncrypt"
+### TLS 1.3 with Kyber (Hybrid Mode)
+
+* **Google and Cloudflare** tested **TLS with Kyber + X25519** (a hybrid post-quantum + classical key exchange).
+* Key exchange in TLS happens at the **Application/Transport boundary**.
+* Kyber replaces (or supplements) **Diffie-Hellman** or **ECDH** in TLS handshake.
+
+### VPN Protocols (like WireGuard, IPsec)
+
+* May use NTRU or Kyber-based KEMs for initial key exchange.
+* Still mostly use **symmetric AES/GCM** after that.
+
+---
+
+## 🧠 Why Not Lower Layers?
+
+* Lower layers (like Network, Data Link) use very constrained protocols and often rely on **symmetric encryption** (like IPsec or MACsec).
+* Asymmetric crypto (like Kyber or NTRU) is **too heavy** for constant use at these layers and doesn't suit their architecture.
+
+---
+
+## 🧪 Experimental Uses
+
+* **IoT Secure Boot / Firmware Updates**: Some use **Kyber** or **NTRU** at the Application layer to establish trust before a device boots or updates.
+* **Post-quantum VPNs**: Some experimental IPsec or TLS stacks now support **hybrid post-quantum key exchange**.
+
+---
+
+## ✅ Summary
+
+> **Kyber and NTRU are best suited for use in key exchange at the Transport and Application layers**, such as in:
+
+* TLS handshakes
+* SSH key exchange
+* VPN tunnels
+* Secure messaging (Signal, Matrix)
+* Secure firmware updates in IoT
+
+Would you like an example of Kyber used in a TLS 1.3 handshake?
+
