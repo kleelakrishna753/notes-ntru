@@ -1,3 +1,35 @@
++------------------------------+-------------------+--------------+
+| Layer (Type)                | Output Shape      | Param #      |
++------------------------------+-------------------+--------------+
+| Conv1D (512 filters, k=5)    | (None, T, 512)     | X1 params    |
+| BatchNormalization           | (None, T, 512)     | X2 params    |
+| MaxPooling1D (p=5, s=2)      | (None, T/2, 512)   | 0            |
+| Conv1D (512 filters, k=5)    | (None, T/2, 512)   | X3 params    |
+| BatchNormalization           | (None, T/2, 512)   | X4 params    |
+| MaxPooling1D (p=5, s=2)      | (None, T/4, 512)   | 0            |
+| Dropout (0.2)                | (None, T/4, 512)   | 0            |
+| Conv1D (256 filters, k=5)    | (None, T/4, 256)   | X5 params    |
+| BatchNormalization           | (None, T/4, 256)   | X6 params    |
+| MaxPooling1D (p=5, s=2)      | (None, T/8, 256)   | 0            |
+| Conv1D (256 filters, k=3)    | (None, T/8, 256)   | X7 params    |
+| BatchNormalization           | (None, T/8, 256)   | X8 params    |
+| MaxPooling1D (p=5, s=2)      | (None, T/16, 256)  | 0            |
+| Dropout (0.2)                | (None, T/16, 256)  | 0            |
+| Conv1D (128 filters, k=3)    | (None, T/16, 128)  | X9 params    |
+| BatchNormalization           | (None, T/16, 128)  | X10 params   |
+| MaxPooling1D (p=3, s=2)      | (None, T/32, 128)  | 0            |
+| Dropout (0.2)                | (None, T/32, 128)  | 0            |
+| Flatten                      | (None, F)          | 0            |
+| Dense (512 units)            | (None, 512)        | X11 params   |
+| BatchNormalization           | (None, 512)        | X12 params   |
+| Dense (7 softmax)            | (None, 7)          | X13 params   |
++------------------------------+-------------------+--------------+
+| Total Parameters:            | ~Millions          |              |
++------------------------------+-------------------+--------------+
+
+
+
+
 Whether there is something "better than NTRU" depends on what criteria you're using—**security, performance, standardization, implementation complexity, or resistance to quantum attacks**. Here's a breakdown:
 
 ---
