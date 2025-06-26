@@ -29,7 +29,6 @@
 
 
 
-
 Whether there is something "better than NTRU" depends on what criteria you're using—**security, performance, standardization, implementation complexity, or resistance to quantum attacks**. Here's a breakdown:
 
 ---
